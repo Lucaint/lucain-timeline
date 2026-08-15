@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUCAIN // Chronal Cyber-Tree</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="terminal-header">
+        <div class="status-indicator"></div>
+        <div class="terminal-title">LUCAIN ARCHIVE // TEMPORAL CHRONO-TREE</div>
+        <div class="header-status">SYSTEM: ONLINE | CORE SYNC: 100%</div>
+    </header>
+
+    <!-- Fullscreen Canvas Container -->
+    <div id="canvas-container">
+        <canvas id="tree-canvas"></canvas>
+    </div>
+
+    <!-- Kamera Sıfırlama Butonu -->
+    <button id="reset-zoom-btn" class="zoom-reset-btn">↺ KAMERAYI SIFIRLA [RESET VIEW]</button>
+
+    <!-- Side Detail Panel -->
+    <div id="detail-panel" class="panel hidden">
+        <button id="close-btn">✕</button>
+        <div id="panel-badge" class="badge">STABLE DATA</div>
+        <h2 id="panel-title">CHRONO NODE</h2>
+        <hr class="panel-divider">
+        <div class="panel-metadata">PARADOX RISK: <span id="risk-val">0.0%</span></div>
+        <p id="panel-content">Ağaç üzerindeki bir düğüme tıklayarak veri akışını inceleyin.</p>
+        <div class="panel-footer" id="sys-status">STATUS: LINKED TO CORE</div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
