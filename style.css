@@ -17,6 +17,7 @@ body, html {
     position: relative;
     width: 100vw;
     height: 100vh;
+    height: 100dvh; /* Mobil tarayıcı çubukları için dinamik yükseklik */
     background: radial-gradient(circle at center, #001224 0%, #020914 100%);
 }
 
@@ -173,15 +174,21 @@ p.subtitle {
         right: 5%;
         bottom: 15px;
         width: 90%;
-        max-height: 40vh;
+        max-height: 35vh;
         overflow-y: auto;
     }
 
     h1 {
-        font-size: 16px;
+        font-size: 15px;
     }
 
     p.subtitle {
-        font-size: 9px;
+        font-size: 8px;
+    }
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+    #detail-panel {
+        max-height: 30vh;
     }
 }
