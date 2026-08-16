@@ -17,7 +17,7 @@ body, html {
     position: relative;
     width: 100vw;
     height: 100vh;
-    height: 100dvh; /* Mobil tarayıcı çubukları için dinamik yükseklik */
+    height: 100dvh;
     background: radial-gradient(circle at center, #001224 0%, #020914 100%);
 }
 
@@ -38,39 +38,44 @@ body, html {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 20px;
+    padding: 15px;
 }
 
 header {
     pointer-events: auto;
+    background: rgba(2, 9, 20, 0.7);
+    padding: 8px 12px;
+    border-radius: 4px;
+    border-left: 2px solid #00f0ff;
+    max-width: fit-content;
 }
 
 h1 {
-    font-size: 20px;
-    letter-spacing: 2px;
+    font-size: 16px;
+    letter-spacing: 1px;
     text-shadow: 0 0 10px #00f0ff;
 }
 
 p.subtitle {
-    font-size: 11px;
+    font-size: 10px;
     color: #a0a0a0;
     letter-spacing: 1px;
 }
 
 .controls {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 15px;
+    right: 15px;
     pointer-events: auto;
 }
 
 .cyber-btn {
-    background: rgba(0, 240, 255, 0.1);
+    background: rgba(0, 240, 255, 0.15);
     border: 1px solid #00f0ff;
     color: #00f0ff;
-    padding: 8px 16px;
+    padding: 6px 12px;
     font-family: inherit;
-    font-size: 11px;
+    font-size: 10px;
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
@@ -85,13 +90,13 @@ p.subtitle {
 /* DETAIL PANEL */
 #detail-panel {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
+    bottom: 15px;
+    right: 15px;
     width: 320px;
     background: rgba(2, 9, 20, 0.95);
     border: 1px solid #00f0ff;
     box-shadow: 0 0 25px rgba(0, 240, 255, 0.3);
-    padding: 18px;
+    padding: 15px;
     pointer-events: auto;
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
     z-index: 100;
@@ -108,8 +113,8 @@ p.subtitle {
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid rgba(0, 240, 255, 0.3);
-    padding-bottom: 8px;
-    margin-bottom: 12px;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
 }
 
 .badge {
@@ -129,23 +134,23 @@ p.subtitle {
 }
 
 #panel-title {
-    font-size: 14px;
-    margin-bottom: 10px;
+    font-size: 13px;
+    margin-bottom: 8px;
     letter-spacing: 1px;
 }
 
 #panel-content {
-    font-size: 12px;
+    font-size: 11px;
     color: #cccccc;
-    line-height: 1.5;
-    min-height: 60px;
+    line-height: 1.4;
+    min-height: 50px;
 }
 
 .panel-footer {
-    margin-top: 15px;
-    padding-top: 8px;
+    margin-top: 10px;
+    padding-top: 6px;
     border-top: 1px dashed rgba(0, 240, 255, 0.2);
-    font-size: 10px;
+    font-size: 9px;
     color: #888888;
     display: flex;
     justify-content: space-between;
@@ -172,23 +177,22 @@ p.subtitle {
     #detail-panel {
         left: 5%;
         right: 5%;
-        bottom: 15px;
+        bottom: 10px;
         width: 90%;
-        max-height: 35vh;
+        max-height: 32vh;
         overflow-y: auto;
     }
 
     h1 {
-        font-size: 15px;
+        font-size: 12px;
     }
 
     p.subtitle {
         font-size: 8px;
     }
-}
 
-@media (max-width: 768px) and (orientation: portrait) {
-    #detail-panel {
-        max-height: 30vh;
+    .controls {
+        top: 10px;
+        right: 10px;
     }
 }
