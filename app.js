@@ -64,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const cx = width / 2;
         const cy = height;
 
-        // 1. ANA DÜĞÜMLER
         const mainNodes = [
             {
                 id: "core",
@@ -112,7 +111,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         ];
 
-        // 2. SUB-TERMINAL DÜĞÜMLERİ (USB TRIDENT GEOMETRİSİ)
         let subNodes = [];
 
         if (selectedMainCategory) {
@@ -122,26 +120,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (selectedMainCategory === "past") {
                 subNodes = [
-                    // 1. Kök Düğüm (En altta)
                     { id: "p_root", label: "PAST DATA BUS", type: "usb_base", x: baseX, y: baseY + 200, radius: 18, color: "#00f0ff", desc: "HISTORY DATA PATH: 5W1H chronal analysis matrix." },
-
-                    // 2. Tepe Ok (USB Trident'in tepesindeki dikey ana ok - HOW)
                     { id: "p_how", label: "HOW? [Time Excision]", type: "usb_node", shape: "arrow", x: baseX, y: baseY - 120, radius: 16, color: "#00f0ff", parent: "p_root", desc: "Method: Slicing and stealing precise temporal frames directly from the timeline continuum." },
-
-                    // 3. Dikey Doğrudan Çıkan 5W Dalları (USB logosu mantığı)
-                    // Sol Alt Dal (WHO)
                     { id: "p_who", label: "1K: WHO? [Lucain]", type: "usb_node", shape: "circle", branchOriginY: baseY + 120, x: baseX - 120, y: baseY + 50, radius: 14, color: "#00f0ff", parent: "p_root", desc: "Civil Identity: Lucain. His first archival record before he acquired his time abilities." },
-
-                    // Sağ Alt Dal (WHEN)
                     { id: "p_when", label: "WHEN? [T-2024]", type: "usb_node", shape: "square", branchOriginY: baseY + 80, x: baseX + 120, y: baseY + 10, radius: 14, color: "#00f0ff", parent: "p_root", desc: "Time Zone: T-2024 relative timeline." },
-
-                    // Sol Orta Dal (WHAT)
                     { id: "p_what", label: "WHAT? [Jump #09]", type: "usb_node", shape: "square", branchOriginY: baseY + 20, x: baseX - 130, y: baseY - 40, radius: 14, color: "#00f0ff", parent: "p_root", desc: "Event: Micro-tear occurring in temporal tissue during Time Jump 9." },
-
-                    // Sağ Üst Dal (WHERE)
                     { id: "p_where", label: "WHERE? [Sector-7]", type: "usb_node", shape: "circle", branchOriginY: baseY - 30, x: baseX + 130, y: baseY - 80, radius: 14, color: "#00f0ff", parent: "p_root", desc: "Location: Sector-7 Underground Laboratory." },
-
-                    // Sol Üst Dal (WHY)
                     { id: "p_why", label: "WHY? [The Ugly Truth]", type: "usb_node", shape: "circle", branchOriginY: baseY - 60, x: baseX - 120, y: baseY - 100, radius: 14, color: "#00f0ff", parent: "p_root", desc: "Reason: To prevent a coronal reactor explosion." }
                 ];
             } else if (selectedMainCategory === "present") {
@@ -162,7 +146,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return [...mainNodes, ...subNodes];
     }
 
-    // --- SONSUZ NEON KILCALLAR ---
     function generateBackgroundBranches() {
         backgroundBranches = [];
         const cx = width / 2;
@@ -175,17 +158,15 @@ document.addEventListener("DOMContentLoaded", () => {
         ];
 
         mainOrigins.forEach(origin => {
-            for (let i = 0; i < 45; i++) {
+            for (let i = 0; i < 30; i++) {
                 const angle = -Math.PI / 2 + (Math.random() - 0.5) * 2.5;
                 const len = 150 + Math.random() * 380;
                 const endX = origin.x + Math.cos(angle) * len;
                 const endY = origin.y + Math.sin(angle) * len;
                 
                 backgroundBranches.push({
-                    x1: origin.x,
-                    y1: origin.y,
-                    x2: endX,
-                    y2: endY,
+                    x1: origin.x, y1: origin.y,
+                    x2: endX, y2: endY,
                     cpX: (origin.x + endX) / 2 + (Math.random() - 0.5) * 120,
                     cpY: (origin.y + endY) / 2 + (Math.random() - 0.5) * 120,
                     alpha: 0.08 + Math.random() * 0.28,
@@ -197,11 +178,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function initParticles() {
         particles = [];
-        for (let i = 0; i < 85; i++) {
+        for (let i = 0; i < 50; i++) {
             particles.push({
                 x: Math.random() * width,
                 y: Math.random() * height,
-                size: Math.random() * 2.5 + 0.5,
+                size: Math.random() * 2 + 0.5,
                 vx: (Math.random() - 0.5) * 0.4,
                 vy: -Math.random() * 0.5 - 0.2,
                 alpha: Math.random() * 0.7 + 0.2
@@ -211,66 +192,42 @@ document.addEventListener("DOMContentLoaded", () => {
     initParticles();
     resize();
 
-    // YUMUŞAK DOKULU AĞAÇ DALI
-    function drawTaperedBranch(p1, p2, startWidth, endWidth, color, glowColor, isHighlighted) {
+    function drawTaperedBranch(p1, p2, startWidth, endWidth, color, glowColor, isHighlighted, fastMode) {
         ctx.save();
         const midY = (p1.y + p2.y) / 2;
         const cp1 = { x: p1.x, y: midY };
         const cp2 = { x: p2.x, y: midY };
 
         ctx.shadowColor = glowColor;
-        ctx.shadowBlur = isHighlighted ? 25 : 10;
+        ctx.shadowBlur = fastMode ? 0 : (isHighlighted ? 20 : 8);
 
-        const steps = 20;
-        let prevX = p1.x;
-        let prevY = p1.y;
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, p2.x, p2.y);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = (startWidth + endWidth) / 2;
+        ctx.lineCap = "round";
+        ctx.stroke();
 
-        for (let i = 1; i <= steps; i++) {
-            const t = i / steps;
-            const cx = Math.pow(1 - t, 3) * p1.x +
-                       3 * Math.pow(1 - t, 2) * t * cp1.x +
-                       3 * (1 - t) * Math.pow(t, 2) * cp2.x +
-                       Math.pow(t, 3) * p2.x;
-            const cy = Math.pow(1 - t, 3) * p1.y +
-                       3 * Math.pow(1 - t, 2) * t * cp1.y +
-                       3 * (1 - t) * Math.pow(t, 2) * cp2.y +
-                       Math.pow(t, 3) * p2.y;
-
-            const currentWidth = startWidth + (endWidth - startWidth) * t;
-
-            ctx.beginPath();
-            ctx.moveTo(prevX, prevY);
-            ctx.lineTo(cx, cy);
-            ctx.strokeStyle = color;
-            ctx.lineWidth = currentWidth;
-            ctx.lineCap = "round";
-            ctx.stroke();
-
-            prevX = cx;
-            prevY = cy;
-        }
         ctx.restore();
     }
 
-    // USB LOGO GEOMETRİSİ (USB İKONU DALLANMASI)
-    function drawUSBTridentBranch(p1, p2, color, glowColor, isHighlighted, node) {
+    function drawUSBTridentBranch(p1, p2, color, glowColor, isHighlighted, node, fastMode) {
         ctx.save();
         ctx.shadowColor = glowColor;
-        ctx.shadowBlur = isHighlighted ? 20 : 10;
+        ctx.shadowBlur = fastMode ? 0 : (isHighlighted ? 18 : 8);
         ctx.strokeStyle = color;
-        ctx.lineWidth = isHighlighted ? 4 : 2.5;
+        ctx.lineWidth = isHighlighted ? 3.5 : 2;
         ctx.lineCap = "square";
 
         ctx.beginPath();
 
-        // Eğer düğüm dikey gövdeden ayrılan bir yan dalsa
         if (node && node.branchOriginY !== undefined) {
-            const startX = p1.x; // Dikey gövdenin X ekseni (baseX)
-            const startY = node.branchOriginY; // Gövde üzerindeki ayrılma noktası
+            const startX = p1.x;
+            const startY = node.branchOriginY;
 
             ctx.moveTo(startX, startY);
 
-            // USB stilinde 45 derece kırılma ile hedefe git
             const dx = p2.x - startX;
             const bendDist = Math.abs(dx) * 0.5;
             const bendY = startY - bendDist;
@@ -279,7 +236,6 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.lineTo(p2.x, bendY);
             ctx.lineTo(p2.x, p2.y);
         } else {
-            // Düz dikey gövde hattı veya varsayılan kırılma
             const dx = p2.x - p1.x;
             const dy = p2.y - p1.y;
 
@@ -301,8 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.restore();
     }
 
-    // MASİF KÜTÜK
-    function drawTrunkAndRoots(cx, cy, isCoreActive, trunkTopY) {
+    function drawTrunkAndRoots(cx, cy, isCoreActive, trunkTopY, fastMode) {
         ctx.save();
         const baseWidth = width * 0.85;       
         const kneeWidth = width * 0.18;       
@@ -332,9 +287,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         ctx.fillStyle = trunkGrad;
         ctx.shadowColor = "#00f0ff";
-        ctx.shadowBlur = isCoreActive ? 35 : 18;
+        ctx.shadowBlur = fastMode ? 0 : (isCoreActive ? 25 : 12);
         ctx.strokeStyle = "#00f0ff";
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2.5;
         ctx.fill();
         ctx.stroke();
 
@@ -342,17 +297,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.moveTo(cx, cy - 110);
         ctx.lineTo(cx, trunkTopY);
         ctx.strokeStyle = "#00f0ff";
-        ctx.lineWidth = 14;
+        ctx.lineWidth = 12;
         ctx.shadowColor = "#00f0ff";
-        ctx.shadowBlur = 20;
+        ctx.shadowBlur = fastMode ? 0 : 15;
         ctx.lineCap = "round";
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(cx, cy - 110);
-        ctx.lineTo(cx, trunkTopY);
-        ctx.strokeStyle = "#ffffff";
-        ctx.lineWidth = 5;
         ctx.stroke();
 
         ctx.restore();
@@ -360,6 +308,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function draw() {
         ctx.clearRect(0, 0, width, height);
+
+        // KAMERA HAREKET KONTROLÜ (Geçiş esnasında hafifletme)
+        const isTransitioning = Math.abs(camera.targetX - camera.x) > 0.5 || 
+                                Math.abs(camera.targetY - camera.y) > 0.5 || 
+                                Math.abs(camera.targetZoom - camera.zoom) > 0.005;
 
         camera.x += (camera.targetX - camera.x) * 0.08;
         camera.y += (camera.targetY - camera.y) * 0.08;
@@ -381,8 +334,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const coreNode = nodesMap["core"];
 
-        // 1. NEON SÜS DALLARI
-        if (!selectedMainCategory) {
+        // 1. NEON ARKA PLAN DALLARI
+        if (!selectedMainCategory && !isTransitioning) {
             ctx.save();
             backgroundBranches.forEach(b => {
                 ctx.beginPath();
@@ -390,34 +343,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 ctx.quadraticCurveTo(b.cpX, b.cpY, b.x2, b.y2);
                 ctx.strokeStyle = `rgba(0, 240, 255, ${b.alpha})`;
                 ctx.lineWidth = b.width;
-                ctx.shadowColor = "#00f0ff";
-                ctx.shadowBlur = 5;
                 ctx.stroke();
             });
             ctx.restore();
         }
 
-        // 2. POLENLER
-        ctx.save();
-        particles.forEach(p => {
-            p.x += p.vx;
-            p.y += p.vy;
-            if (p.y < 0) p.y = height;
-            if (p.x < 0) p.x = width;
-            if (p.x > width) p.x = 0;
+        // 2. POLENLER (Sadece dururken akar)
+        if (!isTransitioning) {
+            ctx.save();
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.y < 0) p.y = height;
+                if (p.x < 0) p.x = width;
+                if (p.x > width) p.x = 0;
 
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(0, 240, 255, ${p.alpha})`;
-            ctx.shadowColor = "#00f0ff";
-            ctx.shadowBlur = 8;
-            ctx.fill();
-        });
-        ctx.restore();
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0, 240, 255, ${p.alpha})`;
+                ctx.fill();
+            });
+            ctx.restore();
+        }
 
         // 3. MASİF KÜTÜK
         const isCoreHovered = hoveredNode && hoveredNode.id === "core";
-        drawTrunkAndRoots(coreNode.x, height, isCoreHovered, trunkTopY);
+        drawTrunkAndRoots(coreNode.x, height, isCoreHovered, trunkTopY, isTransitioning);
 
         // 4. BAĞLANTI HATLARI
         nodes.forEach(node => {
@@ -435,16 +386,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     drawUSBTridentBranch(
                         { x: parentNode.x, y: parentNode.y },
                         { x: node.x, y: node.y },
-                        branchColor, glowColor, isHighlighted, node
+                        branchColor, glowColor, isHighlighted, node, isTransitioning
                     );
                 } else {
-                    let startW = node.parent === "apex" ? 14 : 22;
-                    let endW = 8;
+                    let startW = node.parent === "apex" ? 12 : 18;
+                    let endW = 6;
                     drawTaperedBranch(
                         { x: parentNode.x, y: parentNode.y },
                         { x: node.x, y: node.y },
                         startW, endW,
-                        branchColor, glowColor, isHighlighted
+                        branchColor, glowColor, isHighlighted, isTransitioning
                     );
                 }
             }
@@ -460,9 +411,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (node.type === "usb_node") {
                 ctx.fillStyle = node.isCorrupted ? "#330011" : (isHovered ? "#004466" : "#001224");
                 ctx.strokeStyle = node.isCorrupted ? "#ff0055" : (isHovered ? "#ffffff" : "#00f0ff");
-                ctx.lineWidth = 2.5;
+                ctx.lineWidth = 2;
                 ctx.shadowColor = node.color;
-                ctx.shadowBlur = isHovered ? 20 : 10;
+                ctx.shadowBlur = isTransitioning ? 0 : (isHovered ? 15 : 6);
 
                 if (node.shape === "arrow") {
                     const size = node.radius + (isHovered ? 4 : 0);
@@ -474,7 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     ctx.fill();
                     ctx.stroke();
                 } else if (node.shape === "square") {
-                    const size = (node.radius + (isHovered ? 2 : 0)) * 1.5;
+                    const size = (node.radius + (isHovered ? 2 : 0)) * 1.4;
                     ctx.fillRect(node.x - size / 2, node.y - size / 2, size, size);
                     ctx.strokeRect(node.x - size / 2, node.y - size / 2, size, size);
                 } else {
@@ -486,21 +437,19 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 if (node.type === "root" || isHovered || isActive) {
                     ctx.beginPath();
-                    ctx.arc(node.x, node.y, node.radius + (isHovered ? 12 : 8), 0, Math.PI * 2);
+                    ctx.arc(node.x, node.y, node.radius + (isHovered ? 10 : 6), 0, Math.PI * 2);
                     ctx.strokeStyle = node.isCorrupted ? "rgba(255, 0, 85, 0.6)" : "rgba(0, 240, 255, 0.6)";
-                    ctx.lineWidth = 2;
-                    ctx.shadowColor = node.color;
-                    ctx.shadowBlur = 15;
+                    ctx.lineWidth = 1.5;
                     ctx.stroke();
                 }
 
                 ctx.beginPath();
-                ctx.arc(node.x, node.y, isHovered ? node.radius + 4 : node.radius, 0, Math.PI * 2);
+                ctx.arc(node.x, node.y, isHovered ? node.radius + 3 : node.radius, 0, Math.PI * 2);
                 ctx.fillStyle = node.isCorrupted ? "#330011" : (isHovered ? "#003355" : "#001224");
                 ctx.strokeStyle = node.isCorrupted ? "#ff0055" : "#00f0ff";
-                ctx.lineWidth = node.type === "root" ? 4 : 2.5;
+                ctx.lineWidth = node.type === "root" ? 3 : 2;
                 ctx.shadowColor = node.color;
-                ctx.shadowBlur = isHovered ? 25 : 12;
+                ctx.shadowBlur = isTransitioning ? 0 : (isHovered ? 20 : 8);
                 ctx.fill();
                 ctx.stroke();
 
@@ -510,32 +459,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 ctx.fill();
             }
 
-            // Etiket Kutusu
-            ctx.font = node.type === "root" ? "bold 13px Courier New" : "bold 11px Courier New";
+            // Etiket
+            ctx.font = node.type === "root" ? "bold 12px Courier New" : "bold 10px Courier New";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
 
             const text = node.label;
             const textWidth = ctx.measureText(text).width;
-            const paddingX = 8;
-            const paddingY = 4;
+            const paddingX = 6;
+            const paddingY = 3;
             const boxWidth = textWidth + paddingX * 2;
-            const boxHeight = (node.type === "root" ? 13 : 11) + paddingY * 2;
+            const boxHeight = (node.type === "root" ? 12 : 10) + paddingY * 2;
 
-            const labelY = node.y - node.radius - (node.type === "root" ? 18 : 14);
+            const labelY = node.y - node.radius - (node.type === "root" ? 16 : 12);
             const boxX = node.x - boxWidth / 2;
             const boxY = labelY - boxHeight / 2;
 
-            ctx.fillStyle = "rgba(2, 9, 20, 0.90)";
+            ctx.fillStyle = "rgba(2, 9, 20, 0.85)";
             ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
 
-            ctx.strokeStyle = node.isCorrupted ? "rgba(255, 0, 85, 0.7)" : "rgba(0, 240, 255, 0.5)";
+            ctx.strokeStyle = node.isCorrupted ? "rgba(255, 0, 85, 0.7)" : "rgba(0, 240, 255, 0.4)";
             ctx.lineWidth = 1;
             ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
 
             ctx.fillStyle = node.isCorrupted ? "#ff0055" : (isHovered ? "#ffffff" : "#00f0ff");
-            ctx.shadowColor = node.color;
-            ctx.shadowBlur = isHovered ? 10 : 3;
             ctx.fillText(text, node.x, labelY);
 
             ctx.restore();
@@ -545,7 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
         requestAnimationFrame(draw);
     }
 
-    // --- ETKİLEŞİM & MOUSE DİNLEME ---
+    // --- ETKİLEŞİM & TIKLAMA MANTIGI ---
     canvas.addEventListener("mousemove", (e) => {
         const rect = canvas.getBoundingClientRect();
         const rawMx = e.clientX - rect.left;
@@ -584,7 +531,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             camera.targetX = hoveredNode.x - width / 2;
             camera.targetY = hoveredNode.y - height / 2;
-            camera.targetZoom = 1.5;
+            camera.targetZoom = 1.4;
         }
 
         panel.classList.remove("hidden");
@@ -603,6 +550,18 @@ document.addEventListener("DOMContentLoaded", () => {
         typeWriterEffect(panelContent, hoveredNode.desc, 15);
     });
 
+    // SADECE PANELİ KAPATIR (BULUNDUĞUN DALI BOZMAZ)
+    closeBtn.addEventListener("click", () => {
+        panel.classList.add("hidden");
+        activeNode = null;
+        if (activeTypewriterTimer) {
+            clearTimeout(activeTypewriterTimer);
+            activeTypewriterTimer = null;
+        }
+        panelContent.textContent = "";
+    });
+
+    // TAM SIFIRLAMA (ANA MENÜYE DÖNÜŞ)
     function resetCamera() {
         camera.targetX = 0;
         camera.targetY = 0;
@@ -618,7 +577,6 @@ document.addEventListener("DOMContentLoaded", () => {
         panelContent.textContent = "";
     }
 
-    closeBtn.addEventListener("click", resetCamera);
     resetZoomBtn.addEventListener("click", resetCamera);
 
     draw();
