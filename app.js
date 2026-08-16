@@ -55,9 +55,25 @@ document.addEventListener("DOMContentLoaded", () => {
         canvas.width = width * dpr;
         canvas.height = height * dpr;
         ctx.scale(dpr, dpr);
+
+        // DİKEY / YATAY EKRAN DENGESİ
+        const isPortrait = height > width;
+        if (isPortrait && !selectedMainCategory) {
+            camera.targetZoom = 0.72; // Dikey ekranda ağacın sıkışmaması için kadrajı genişlet
+            camera.targetY = -height * 0.12; // Ağacı tam merkeze kaydır
+        } else if (!selectedMainCategory) {
+            camera.targetZoom = 1;
+            camera.targetY = 0;
+            camera.targetX = 0;
+        }
+
         generateBackgroundBranches();
     }
+
     window.addEventListener("resize", resize);
+    window.addEventListener("orientationchange", () => {
+        setTimeout(resize, 200);
+    });
 
     // --- AĞAÇ VE VERİ HARİTASI ---
     function getNodes() {
@@ -178,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function initParticles() {
         particles = [];
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 40; i++) {
             particles.push({
                 x: Math.random() * width,
                 y: Math.random() * height,
@@ -309,7 +325,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function draw() {
         ctx.clearRect(0, 0, width, height);
 
-        // KAMERA HAREKET KONTROLÜ (Geçiş esnasında hafifletme)
         const isTransitioning = Math.abs(camera.targetX - camera.x) > 0.5 || 
                                 Math.abs(camera.targetY - camera.y) > 0.5 || 
                                 Math.abs(camera.targetZoom - camera.zoom) > 0.005;
@@ -348,7 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.restore();
         }
 
-        // 2. POLENLER (Sadece dururken akar)
+        // 2. POLENLER
         if (!isTransitioning) {
             ctx.save();
             particles.forEach(p => {
@@ -492,7 +507,7 @@ document.addEventListener("DOMContentLoaded", () => {
         requestAnimationFrame(draw);
     }
 
-    // --- ETKİLEŞİM & TIKLAMA MANTIGI ---
+    // --- ETKİLEŞİM MANTIGI ---
     canvas.addEventListener("mousemove", (e) => {
         const rect = canvas.getBoundingClientRect();
         const rawMx = e.clientX - rect.left;
@@ -550,7 +565,6 @@ document.addEventListener("DOMContentLoaded", () => {
         typeWriterEffect(panelContent, hoveredNode.desc, 15);
     });
 
-    // SADECE PANELİ KAPATIR (BULUNDUĞUN DALI BOZMAZ)
     closeBtn.addEventListener("click", () => {
         panel.classList.add("hidden");
         activeNode = null;
@@ -561,14 +575,15 @@ document.addEventListener("DOMContentLoaded", () => {
         panelContent.textContent = "";
     });
 
-    // TAM SIFIRLAMA (ANA MENÜYE DÖNÜŞ)
     function resetCamera() {
-        camera.targetX = 0;
-        camera.targetY = 0;
-        camera.targetZoom = 1;
         activeNode = null;
         selectedMainCategory = null; 
         panel.classList.add("hidden");
+
+        const isPortrait = height > width;
+        camera.targetX = 0;
+        camera.targetY = isPortrait ? -height * 0.12 : 0;
+        camera.targetZoom = isPortrait ? 0.72 : 1;
 
         if (activeTypewriterTimer) {
             clearTimeout(activeTypewriterTimer);
