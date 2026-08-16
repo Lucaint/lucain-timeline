@@ -112,23 +112,37 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         ];
 
-        // 2. SUB-TERMINAL DÜĞÜMLERİ (USB TRIDENT GEOMETRİSİ - YUKARI TAŞINDI)
+        // 2. SUB-TERMINAL DÜĞÜMLERİ (USB TRIDENT GEOMETRİSİ)
         let subNodes = [];
 
         if (selectedMainCategory) {
             const targetMain = mainNodes.find(m => m.id === selectedMainCategory);
             const baseX = targetMain ? targetMain.x : cx;
-            // USB Katmanını 520px yukarı taşıyarak alt kategorileri kadraj dışı bıraktık
             const baseY = targetMain ? targetMain.y - 520 : cy - height; 
 
             if (selectedMainCategory === "past") {
                 subNodes = [
+                    // 1. Kök Düğüm (En altta)
                     { id: "p_root", label: "PAST DATA BUS", type: "usb_base", x: baseX, y: baseY + 200, radius: 18, color: "#00f0ff", desc: "HISTORY DATA PATH: 5W1H chronal analysis matrix." },
-                    { id: "p_who", label: "1K: WHO? [Lucain]", type: "usb_node", shape: "arrow", x: baseX, y: baseY - 80, radius: 14, color: "#00f0ff", parent: "p_root", desc: "Civil Identity: Lucain. His first archival record before he acquired his time abilities." },
-                    { id: "p_what", label: "WHAT? [Jump #09]", type: "usb_node", shape: "square", x: baseX - 110, y: baseY, radius: 14, color: "#00f0ff", parent: "p_root", desc: "Event: Micro-tear occurring in temporal tissue during Time Jump 9." },
-                    { id: "p_where", label: "WHERE? [Sector-7]", type: "usb_node", shape: "circle", x: baseX - 220, y: baseY + 70, radius: 14, color: "#00f0ff", parent: "p_root", desc: "Location: Sector-7 Underground Laboratory." },
-                    { id: "p_when", label: "WHEN? [T-2024]", type: "usb_node", shape: "square", x: baseX + 110, y: baseY, radius: 14, color: "#00f0ff", parent: "p_root", desc: "Time Zone: T-2024 relative timeline." },
-                    { id: "p_why", label: "WHY? [The Ugly Truth]", type: "usb_node", shape: "circle", x: baseX + 220, y: baseY + 70, radius: 14, color: "#00f0ff", parent: "p_root", desc: "Reason: To prevent a coronal reactor explosion." }
+
+                    // 2. Tepe Ok (USB Trident'in tepesindeki dikey ana ok - HOW)
+                    { id: "p_how", label: "HOW? [Time Excision]", type: "usb_node", shape: "arrow", x: baseX, y: baseY - 120, radius: 16, color: "#00f0ff", parent: "p_root", desc: "Method: Slicing and stealing precise temporal frames directly from the timeline continuum." },
+
+                    // 3. Dikey Doğrudan Çıkan 5W Dalları (USB logosu mantığı)
+                    // Sol Alt Dal (WHO)
+                    { id: "p_who", label: "1K: WHO? [Lucain]", type: "usb_node", shape: "circle", branchOriginY: baseY + 120, x: baseX - 120, y: baseY + 50, radius: 14, color: "#00f0ff", parent: "p_root", desc: "Civil Identity: Lucain. His first archival record before he acquired his time abilities." },
+
+                    // Sağ Alt Dal (WHEN)
+                    { id: "p_when", label: "WHEN? [T-2024]", type: "usb_node", shape: "square", branchOriginY: baseY + 80, x: baseX + 120, y: baseY + 10, radius: 14, color: "#00f0ff", parent: "p_root", desc: "Time Zone: T-2024 relative timeline." },
+
+                    // Sol Orta Dal (WHAT)
+                    { id: "p_what", label: "WHAT? [Jump #09]", type: "usb_node", shape: "square", branchOriginY: baseY + 20, x: baseX - 130, y: baseY - 40, radius: 14, color: "#00f0ff", parent: "p_root", desc: "Event: Micro-tear occurring in temporal tissue during Time Jump 9." },
+
+                    // Sağ Üst Dal (WHERE)
+                    { id: "p_where", label: "WHERE? [Sector-7]", type: "usb_node", shape: "circle", branchOriginY: baseY - 30, x: baseX + 130, y: baseY - 80, radius: 14, color: "#00f0ff", parent: "p_root", desc: "Location: Sector-7 Underground Laboratory." },
+
+                    // Sol Üst Dal (WHY)
+                    { id: "p_why", label: "WHY? [The Ugly Truth]", type: "usb_node", shape: "circle", branchOriginY: baseY - 60, x: baseX - 120, y: baseY - 100, radius: 14, color: "#00f0ff", parent: "p_root", desc: "Reason: To prevent a coronal reactor explosion." }
                 ];
             } else if (selectedMainCategory === "present") {
                 subNodes = [
@@ -238,8 +252,8 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.restore();
     }
 
-    // USB LOGO GEOMETRİSİ (45 DERECE KIVRILMA)
-    function drawUSBTridentBranch(p1, p2, color, glowColor, isHighlighted) {
+    // USB LOGO GEOMETRİSİ (USB İKONU DALLANMASI)
+    function drawUSBTridentBranch(p1, p2, color, glowColor, isHighlighted, node) {
         ctx.save();
         ctx.shadowColor = glowColor;
         ctx.shadowBlur = isHighlighted ? 20 : 10;
@@ -247,21 +261,40 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.lineWidth = isHighlighted ? 4 : 2.5;
         ctx.lineCap = "square";
 
-        const dx = p2.x - p1.x;
-        const dy = p2.y - p1.y;
-
         ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
 
-        if (Math.abs(dx) < 10) {
+        // Eğer düğüm dikey gövdeden ayrılan bir yan dalsa
+        if (node && node.branchOriginY !== undefined) {
+            const startX = p1.x; // Dikey gövdenin X ekseni (baseX)
+            const startY = node.branchOriginY; // Gövde üzerindeki ayrılma noktası
+
+            ctx.moveTo(startX, startY);
+
+            // USB stilinde 45 derece kırılma ile hedefe git
+            const dx = p2.x - startX;
+            const bendDist = Math.abs(dx) * 0.5;
+            const bendY = startY - bendDist;
+
+            ctx.lineTo(startX + dx * 0.5, bendY);
+            ctx.lineTo(p2.x, bendY);
             ctx.lineTo(p2.x, p2.y);
         } else {
-            const bendDist = Math.min(Math.abs(dx), Math.abs(dy) * 0.5);
-            const cornerY = p1.y - bendDist;
-            
-            ctx.lineTo(p1.x, p1.y - 20);
-            ctx.lineTo(p2.x, cornerY);
-            ctx.lineTo(p2.x, p2.y);
+            // Düz dikey gövde hattı veya varsayılan kırılma
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+
+            ctx.moveTo(p1.x, p1.y);
+
+            if (Math.abs(dx) < 10) {
+                ctx.lineTo(p2.x, p2.y);
+            } else {
+                const bendDist = Math.min(Math.abs(dx), Math.abs(dy) * 0.5);
+                const cornerY = p1.y - bendDist;
+                
+                ctx.lineTo(p1.x, p1.y - 20);
+                ctx.lineTo(p2.x, cornerY);
+                ctx.lineTo(p2.x, p2.y);
+            }
         }
 
         ctx.stroke();
@@ -348,7 +381,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const coreNode = nodesMap["core"];
 
-        // 1. NEON SÜS DALLARI (Sub-Terminal Modunda Gizlenir)
+        // 1. NEON SÜS DALLARI
         if (!selectedMainCategory) {
             ctx.save();
             backgroundBranches.forEach(b => {
@@ -386,7 +419,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const isCoreHovered = hoveredNode && hoveredNode.id === "core";
         drawTrunkAndRoots(coreNode.x, height, isCoreHovered, trunkTopY);
 
-        // 4. BAGLANTI HATLARI ÇİZİMİ
+        // 4. BAĞLANTI HATLARI
         nodes.forEach(node => {
             if (node.parent) {
                 const parentNode = nodesMap[node.parent];
@@ -402,7 +435,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     drawUSBTridentBranch(
                         { x: parentNode.x, y: parentNode.y },
                         { x: node.x, y: node.y },
-                        branchColor, glowColor, isHighlighted
+                        branchColor, glowColor, isHighlighted, node
                     );
                 } else {
                     let startW = node.parent === "apex" ? 14 : 22;
@@ -512,7 +545,7 @@ document.addEventListener("DOMContentLoaded", () => {
         requestAnimationFrame(draw);
     }
 
-    // --- ETKİLEŞİM & MOUSE DINLEME ---
+    // --- ETKİLEŞİM & MOUSE DİNLEME ---
     canvas.addEventListener("mousemove", (e) => {
         const rect = canvas.getBoundingClientRect();
         const rawMx = e.clientX - rect.left;
@@ -543,7 +576,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         activeNode = hoveredNode;
 
-        // Kamera Hedefi 490px Yukarı Kaydırıldı (Eski Yazılar Kadraj Dışında Kalır)
         if (["past", "present", "future"].includes(hoveredNode.id)) {
             selectedMainCategory = hoveredNode.id;
             camera.targetX = hoveredNode.x - width / 2;
